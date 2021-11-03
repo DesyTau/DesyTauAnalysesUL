@@ -87,3 +87,67 @@ Other variables are introduced for dedicated analyses, e.g. `isHiggsSignal` for 
 
 Suggestions: please rename python and grid-control config files before starting the ntuple production as it helps keeping track of what was used for a specific NTuple campaign.
 
+# NTuple Producer (CRAB option)
+
+The following method to submit ntupling is an alternative to what was described above. This setup runs on miniAOD and uses CRAB-API for job handling, therefore it allowsCurrent international Grid resources. Current method eliminates the need of handling the datafile names and uses high performant distributed computing on Grid.
+
+The main parts of the code for submition is inherited from [https://github.com/shedprog/TauMLTools](https://github.com/grid-control/grid-control).
+
+## cmsRun config
+
+Minor changes were introduced to the `Producer/python/TreeProducerCRAB.py` config file in order to handle the input arguments. To run/test the config file execute the following command:
+```sh
+cmsRun ./Producer/python/TreeProducerCRAB.py inputFiles=/store/data/Run2018A/DoubleMuon/MINIAOD/UL2018_MiniAODv2-v1/260001/D2E6AF6E-F0BA-0B41-B62B-BE156913CE90.root isData=True year=2018 period=UL2018 fileNamePrefix=root://cmsxrootd.fnal.gov
+```
+TreeProducerCRAB.py is steered by the following arguments (no need to setup flags which are correct by default or not used):
+* `fileList` : List of root files to process. 
+* `fileNamePrefix` : Prefix to add to input file names. 
+* `tupleOutput` : Event tuple file. 
+* `lumiFile` : JSON file with lumi mask.
+* `isData` : For data : True, for MC : False, for Embedded : True 
+* `isSingleMuonData` : Needed to record track collection for NMSSM ananlysis 
+* `isEmbedded` : Set to true if you run over Z->TauTau embedded samples 
+* `isHiggsSignal` : Set to true if you run over higgs signal samples -> needed for STXS1p1 flags 
+* `year` : Options: 2016, 2017, 2018 
+* `period` : Options: UL2016APV, UL2016, UL2017, UL2018 
+* `RunTauSpinnerProducer` : Only do this if you want to calculate tauspinner weights for a sample with two taus and flat tau polarisation
+
+## Config files
+
+Config files for the UL tuples production are stored in `Producer/crab/configs/UL/UL*/`
+e.g: for DoubleMuon UL2018 Data head of config file is the following: 
+```txt
+isData=True year=2018 period=UL2018
+
+DoubleMuon-Run2018A-UL2018 /DoubleMuon/Run2018A-UL2018_MiniAODv2-v1/MINIAOD
+DoubleMuon-Run2018B-UL2018 /DoubleMuon/Run2018B-UL2018_MiniAODv2-v1/MINIAOD
+DoubleMuon-Run2018C-UL2018 /DoubleMuon/Run2018C-UL2018_MiniAODv2-v1/MINIAOD
+...
+```
+In the head of the file the flags which will be passed to the cmsRun command are introduced. Optionally lumiMask can be provided with path to json file `lumiMask=...` (to be added to the header)
+The list of the datasets is provided in the form of
+```
+<data_set_nick> <full/dataset/name>
+```
+## Tuple production 
+
+1. At the beginning setup of the CMSSW environment and creating voms proxy is needed:
+```sh
+cd $CMSSW_BASE
+cmsenv
+voms-proxy-init -rfc -voms cms -valid 192:00
+```
+2. To submit ntupling to the Grid use the command (example for UL2018 and private storage), for some of the datasets or for private production custom DBS should be specified:
+```sh
+cd $CMSSW_BASE/src/
+crab_submit.py
+      --workArea <path_to_working_area>
+      --cfg ./Producer/python/TreeProducerCRAB.py
+      --site T2_DE_DESY
+      --output /store/user/myshched/ntuples/Oktoberfest21/data
+Producer/crab/configs/UL/UL2018/EGamma.txt Producer/crab/configs/UL/UL2018/MuonEG.txt ...
+
+```
+After this on the Tier2 storage and inside your working-area directories with <data_set_nicks> will be created for every  To list all available arguments use `crab_submit.py --help`
+
+3. To resubmit or to check the status of the production `crab status -d <path>` and `crab resubmit -d <path>` should be used
