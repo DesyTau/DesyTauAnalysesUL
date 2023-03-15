@@ -29,6 +29,20 @@ The main script you will use is `/path/to/grid-control/go.py`.
 
 First you need to check that the datasets are correctly stored in T2_DE_DESY with Rucio.
 NOTE: You need to NOT have set up your CMSSW environment for this or there will be conflicts with the python library used by Rucio.
+
+The method to request a Rucio transfer to create a replica in T2_DE_DESY of CMS dataset was changed in late 2022.
+Updates on the procedures can be found in the [HamburgWikiComputingRucio twiki](https://twiki.cern.ch/twiki/bin/viewauth/CMS/HamburgWikiComputingRucio).
+
+At the moment the only reliable way to request a Rucio replica is:
+
+```bash
+rucio add-rule --ask-approval --lifetime 2592000 cms:/DATASETNAME1 cms:/DATASETNAME2 [other datasets] 1 T2_DE_DESY
+```
+
+
+<details>
+<summary>Deprecated Rucio tranfer procedure</summary>
+
 The script `Producer/test/rucio_transfer.sh` can be used for transfering one dataset at a time, it can be executed with:
 ```bash
 ./rucio_transfer.sh <nickname of dataset> </DATASET-NAME/CAMPAIGN/MINIAODSIM(MINIAOD/USER)>
@@ -51,6 +65,7 @@ rucio add-rule --ask-approval user.${RUCIO_ACCOUNT}:/Analyses/$NICK/USER 1 T2_DE
 ```
 The `attach user` instruction can be executed again for different datasets, in order to attach them to the same container.
 
+</details>
 
 
 Second: create a list of files from cms-das on which grid-control will act.
