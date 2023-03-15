@@ -164,7 +164,7 @@
 using namespace std;
 using namespace reco;
 
-#define M_Nweights 20 //number of GenEventInfo weights to be stored
+#define M_Nweights 46 //number of GenEventInfo weights to be stored
 #define M_trackmaxcount 1000
 #define M_superclustermaxcount 1000
 #define M_superclustermembermaxcount 1000

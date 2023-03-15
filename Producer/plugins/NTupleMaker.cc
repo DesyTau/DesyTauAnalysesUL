@@ -1014,7 +1014,7 @@ void NTupleMaker::beginJob(){
       tree->Branch("genid2", &genid2, "genid2/F");
       tree->Branch("genx2", &genx2, "genx2/F");
       tree->Branch("genScale", &genScale, "genScale/F");
-      tree->Branch("gen_pythiaweights", &gen_pythiaweights, "gen_pythiaweights[20]/F");
+      tree->Branch("gen_pythiaweights", &gen_pythiaweights, "gen_pythiaweights[46]/F");
       
       for (int iScale=0; iScale<9; ++iScale) {
 	char number[4];
