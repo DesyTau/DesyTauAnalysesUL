@@ -541,6 +541,8 @@ void NTupleMaker::beginJob(){
     tree->Branch("pfjet_energycorr_l3absolute", pfjet_energycorr_l3absolute, "pfjet_energycorr_l3absolute[pfjet_count]/F");
     tree->Branch("pfjet_energycorr_l2l3residual", pfjet_energycorr_l2l3residual, "pfjet_energycorr_l2l3residual[pfjet_count]/F");
     tree->Branch("pfjet_flavour", pfjet_flavour, "pfjet_flavour[pfjet_count]/I");
+    tree->Branch("pfjet_hadronflavour", pfjet_hadronflavour, "pfjet_hadronflavour[pfjet_count]/I");
+
     tree->Branch("pfjet_btag", pfjet_btag,"pfjet_btag[pfjet_count][10]/F");
     tree->Branch("pfjet_jecUncertainty",pfjet_jecUncertainty,"pfjet_jecUncertainty[pfjet_count]/F");
     //tree->Branch("pfjet_pu_jet_fullId_loose", pfjet_pu_jet_fullId_loose, "pfjet_pu_jet_fullId_loose[pfjet_count]/O");
@@ -573,6 +575,7 @@ void NTupleMaker::beginJob(){
     tree->Branch("pfjetpuppi_energycorr_l3absolute", pfjetpuppi_energycorr_l3absolute, "pfjetpuppi_energycorr_l3absolute[pfjetpuppi_count]/F");
     tree->Branch("pfjetpuppi_energycorr_l2l3residual", pfjetpuppi_energycorr_l2l3residual, "pfjetpuppi_energycorr_l2l3residual[pfjetpuppi_count]/F");
     tree->Branch("pfjetpuppi_flavour", pfjetpuppi_flavour, "pfjetpuppi_flavour[pfjetpuppi_count]/I");
+    tree->Branch("pfjetpuppi_hadronflavour", pfjetpuppi_hadronflavour, "pfjetpuppi_hadronflavour[pfjetpuppi_count]/I");
     tree->Branch("pfjetpuppi_btag", pfjetpuppi_btag,"pfjetpuppi_btag[pfjetpuppi_count][10]/F");
     tree->Branch("pfjetpuppi_jecUncertainty",pfjetpuppi_jecUncertainty,"pfjetpuppi_jecUncertainty[pfjetpuppi_count]/F");
   }
@@ -4595,6 +4598,8 @@ unsigned int NTupleMaker::AddPFJets(const edm::Event& iEvent, const edm::EventSe
 	  pfjet_chargedmulti[pfjet_count] = (*pfjets)[i].chargedMultiplicity();
 	  pfjet_neutralmulti[pfjet_count] = (*pfjets)[i].neutralMultiplicity();
 	  pfjet_chargedhadronmulti[pfjet_count] = (*pfjets)[i].chargedHadronMultiplicity();
+	  pfjet_hadronflavour[pfjet_count] = (*pfjets)[i].hadronFlavour();
+	  pfjet_flavour[pfjet_count] = (*pfjets)[i].partonFlavour();
 
 	  pfjet_energycorr[pfjet_count] = -1.;
 	  pfjet_energycorr_l1fastjet[pfjet_count] = -1.;
@@ -4614,7 +4619,6 @@ unsigned int NTupleMaker::AddPFJets(const edm::Event& iEvent, const edm::EventSe
 	  jecUnc->setJetEta(pfjet_eta[pfjet_count]);
 	  jecUnc->setJetPt(pfjet_pt[pfjet_count]);
 	  pfjet_jecUncertainty[pfjet_count] = jecUnc->getUncertainty(true);
-	  pfjet_flavour[pfjet_count] = (*pfjets)[i].partonFlavour();
 
 	  //pileup jet id
 
@@ -4652,63 +4656,64 @@ unsigned int NTupleMaker::AddPFPuppiJets(const edm::Event& iEvent, const edm::Ev
   if(pfjetspuppi.isValid())
     {
       for(unsigned i = 0 ; i < pfjetspuppi->size() ; i++)
-	     {
-
-         if(pfjetpuppi_count == M_jetmaxcount){
-	          cerr << "number of pfjetspuppi > M_jetmaxcount. They are missing." << endl;
-	          errors |= 1<<4;
-	          break;
-	       }
-        if((*pfjetspuppi)[i].pt() < cJetPtMin) continue;
+	{
+	  
+	  if(pfjetpuppi_count == M_jetmaxcount){
+	    cerr << "number of pfjetspuppi > M_jetmaxcount. They are missing." << endl;
+	    errors |= 1<<4;
+	    break;
+	  }
+	  if((*pfjetspuppi)[i].pt() < cJetPtMin) continue;
 	      if(fabs((*pfjetspuppi)[i].eta()) > cJetEtaMax) continue;
-
-	       pfjetpuppi_e[pfjetpuppi_count] = (*pfjetspuppi)[i].energy();
-	       pfjetpuppi_px[pfjetpuppi_count] = (*pfjetspuppi)[i].px();
+	      
+	      pfjetpuppi_e[pfjetpuppi_count] = (*pfjetspuppi)[i].energy();
+	      pfjetpuppi_px[pfjetpuppi_count] = (*pfjetspuppi)[i].px();
 	      pfjetpuppi_py[pfjetpuppi_count] = (*pfjetspuppi)[i].py();
 	      pfjetpuppi_pz[pfjetpuppi_count] = (*pfjetspuppi)[i].pz();
-        pfjetpuppi_pt[pfjetpuppi_count] = (*pfjetspuppi)[i].pt();
-          pfjetpuppi_eta[pfjetpuppi_count] = (*pfjetspuppi)[i].eta();
-          pfjetpuppi_phi[pfjetpuppi_count] = (*pfjetspuppi)[i].phi();
-	  pfjetpuppi_neutralhadronicenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].neutralHadronEnergy();
-	  pfjetpuppi_chargedhadronicenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedHadronEnergy();
-	  pfjetpuppi_neutralemenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].neutralEmEnergy();
-	  pfjetpuppi_chargedemenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedEmEnergy();
-	  pfjetpuppi_muonenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].muonEnergy();
-	  pfjetpuppi_chargedmuonenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedMuEnergy();
-	  pfjetpuppi_chargedmulti[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedMultiplicity();
-	  pfjetpuppi_neutralmulti[pfjetpuppi_count] = (*pfjetspuppi)[i].neutralMultiplicity();
-	  pfjetpuppi_chargedhadronmulti[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedHadronMultiplicity();
+	      pfjetpuppi_pt[pfjetpuppi_count] = (*pfjetspuppi)[i].pt();
+	      pfjetpuppi_eta[pfjetpuppi_count] = (*pfjetspuppi)[i].eta();
+	      pfjetpuppi_phi[pfjetpuppi_count] = (*pfjetspuppi)[i].phi();
+	      pfjetpuppi_neutralhadronicenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].neutralHadronEnergy();
+	      pfjetpuppi_chargedhadronicenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedHadronEnergy();
+	      pfjetpuppi_neutralemenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].neutralEmEnergy();
+	      pfjetpuppi_chargedemenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedEmEnergy();
+	      pfjetpuppi_muonenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].muonEnergy();
+	      pfjetpuppi_chargedmuonenergy[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedMuEnergy();
+	      pfjetpuppi_chargedmulti[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedMultiplicity();
+	      pfjetpuppi_neutralmulti[pfjetpuppi_count] = (*pfjetspuppi)[i].neutralMultiplicity();
+	      pfjetpuppi_chargedhadronmulti[pfjetpuppi_count] = (*pfjetspuppi)[i].chargedHadronMultiplicity();
 
-	  pfjetpuppi_energycorr[pfjetpuppi_count] = -1.;
-	  pfjetpuppi_energycorr_l1fastjet[pfjetpuppi_count] = -1.;
-	  pfjetpuppi_energycorr_l2relative[pfjetpuppi_count] = -1.;
-	  pfjetpuppi_energycorr_l3absolute[pfjetpuppi_count] = -1.;
-	  pfjetpuppi_energycorr_l2l3residual[pfjetpuppi_count] = -1.;
+	      pfjetpuppi_energycorr[pfjetpuppi_count] = -1.;
+	      pfjetpuppi_energycorr_l1fastjet[pfjetpuppi_count] = -1.;
+	      pfjetpuppi_energycorr_l2relative[pfjetpuppi_count] = -1.;
+	      pfjetpuppi_energycorr_l3absolute[pfjetpuppi_count] = -1.;
+	      pfjetpuppi_energycorr_l2l3residual[pfjetpuppi_count] = -1.;
 
-	  if((*pfjetspuppi)[i].jecSetsAvailable())
-	    {
-	      pfjetpuppi_energycorr[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("Uncorrected");
-	      pfjetpuppi_energycorr_l1fastjet[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("L1FastJet");
-	      pfjetpuppi_energycorr_l2relative[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("L2Relative");
-	      pfjetpuppi_energycorr_l3absolute[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("L3Absolute");
-	      if (cdata) pfjetpuppi_energycorr_l2l3residual[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("L2L3Residual");
-	    }
+	      if((*pfjetspuppi)[i].jecSetsAvailable())
+		{
+		  pfjetpuppi_energycorr[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("Uncorrected");
+		  pfjetpuppi_energycorr_l1fastjet[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("L1FastJet");
+		  pfjetpuppi_energycorr_l2relative[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("L2Relative");
+		  pfjetpuppi_energycorr_l3absolute[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("L3Absolute");
+		  if (cdata) pfjetpuppi_energycorr_l2l3residual[pfjetpuppi_count] = (*pfjetspuppi)[i].jecFactor("L2L3Residual");
+		}
 
-	  jecUnc->setJetEta(pfjetpuppi_eta[pfjetpuppi_count]);
-	  jecUnc->setJetPt(pfjetpuppi_pt[pfjetpuppi_count]);
-	  pfjetpuppi_jecUncertainty[pfjetpuppi_count] = jecUnc->getUncertainty(true);
-	  pfjetpuppi_flavour[pfjetpuppi_count] = (*pfjetspuppi)[i].partonFlavour();
-
-	  for(unsigned n = 0 ; n < cBtagDiscriminators.size() ; n++)
-	    {
-	      pfjetpuppi_btag[pfjetpuppi_count][n] = -1000;
-	      if(cBtagDiscriminators[n] != "F"){
-		//		std::cout << " " << cBtagDiscriminators.at(n) << "  : " <<  (*pfjetspuppi)[i].bDiscriminator(cBtagDiscriminators[n]) << std::endl;
-		pfjetpuppi_btag[pfjetpuppi_count][n] = (*pfjetspuppi)[i].bDiscriminator(cBtagDiscriminators[n]) ;
-	      }
-	    }
-	  pfjetpuppi_count++;
-	}
+	      jecUnc->setJetEta(pfjetpuppi_eta[pfjetpuppi_count]);
+	      jecUnc->setJetPt(pfjetpuppi_pt[pfjetpuppi_count]);
+	      pfjetpuppi_jecUncertainty[pfjetpuppi_count] = jecUnc->getUncertainty(true);
+	      pfjetpuppi_flavour[pfjetpuppi_count] = (*pfjetspuppi)[i].partonFlavour();
+	      pfjetpuppi_hadronflavour[pfjetpuppi_count] = (*pfjetspuppi)[i].hadronFlavour();
+	      
+	      for(unsigned n = 0 ; n < cBtagDiscriminators.size() ; n++)
+		{
+		  pfjetpuppi_btag[pfjetpuppi_count][n] = -1000;
+		  if(cBtagDiscriminators[n] != "F"){
+		    //		std::cout << " " << cBtagDiscriminators.at(n) << "  : " <<  (*pfjetspuppi)[i].bDiscriminator(cBtagDiscriminators[n]) << std::endl;
+		    pfjetpuppi_btag[pfjetpuppi_count][n] = (*pfjetspuppi)[i].bDiscriminator(cBtagDiscriminators[n]) ;
+		  }
+		}
+	      pfjetpuppi_count++;
+	     }
     }
   return  pfjetpuppi_count;
 }

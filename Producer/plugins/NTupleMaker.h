@@ -728,6 +728,7 @@ class NTupleMaker : public edm::EDAnalyzer{
   Float_t pfjet_energycorr_l3absolute[M_jetmaxcount];
   Float_t pfjet_energycorr_l2l3residual[M_jetmaxcount];
   Int_t pfjet_flavour[M_jetmaxcount];
+  Int_t pfjet_hadronflavour[M_jetmaxcount];
   Float_t pfjet_btag[M_jetmaxcount][10];
   Float_t pfjet_jecUncertainty[M_jetmaxcount];
   Bool_t pfjet_pu_jet_fullId_loose[M_jetmaxcount];
@@ -761,6 +762,7 @@ class NTupleMaker : public edm::EDAnalyzer{
   Float_t pfjetpuppi_energycorr_l3absolute[M_jetmaxcount];
   Float_t pfjetpuppi_energycorr_l2l3residual[M_jetmaxcount];
   Int_t pfjetpuppi_flavour[M_jetmaxcount];
+  Int_t pfjetpuppi_hadronflavour[M_jetmaxcount];
   Float_t pfjetpuppi_btag[M_jetmaxcount][10];
   Float_t pfjetpuppi_jecUncertainty[M_jetmaxcount];
 
@@ -1359,6 +1361,8 @@ class NTupleMaker : public edm::EDAnalyzer{
   Float_t genjets_had_energy[M_genjetsmaxcount];
   Float_t genjets_invisible_energy[M_genjetsmaxcount];
   Float_t genjets_auxiliary_energy[M_genjetsmaxcount];
+  Int_t genjets_flavour[M_genjetsmaxcount];
+  Int_t genjets_hadronflavour[M_genjetsmaxcount];
 
   // trigger objects
   UInt_t trigobject_count;

@@ -181,7 +181,7 @@ InitAnalyzer::beginJob()
   }
   if (cgen && !cdata) {
     tree0->Branch("genweight", &genweight, "genweight/F");
-	}
+  }
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

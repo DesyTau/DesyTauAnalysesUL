@@ -1,6 +1,5 @@
-<export>
-</export>
 <library   name="DesyTauAnalysesNTupleMaker_plugins" file="*.cc">
+<Flags CXXFLAGS="-fpermissive" />
 <use name="tauolapp"/> 
 <use   name="DataFormats/Common"/>
 <use   name="DataFormats/JetReco"/>
